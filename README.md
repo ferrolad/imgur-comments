@@ -1,4 +1,4 @@
-[Demo](https://mking.github.io/icom) / [Original](https://imgur.com/eLpsvsR)
+[Demo](https://mking.github.io/imgur-comments) / [Original](https://imgur.com/eLpsvsR)
 
 Features
 ---
