@@ -1,0 +1,102 @@
+.comment .row {
+  align-items: flex-start;
+  cursor: pointer;
+  display: flex;
+  margin-bottom: 5px;
+}
+
+.comment .row:hover .open {
+  display: block;
+}
+
+.comment .open {
+  color: #85BF25;
+  display: none;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+
+.comment .toggle {
+  align-items: center;
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  width: 10px;
+}
+
+.comment .vote {
+  display: flex;
+  flex-shrink: 0;
+  /* Simulate height for one line of text. */
+  height: 54px;
+}
+
+.comment .buttons {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  justify-content: center;
+  width: 30px;
+}
+
+.comment button {
+  background-image: linear-gradient(rgb(89,89,89) 0,rgb(64,64,64) 100%);
+  border: 0;
+  border-bottom: 1px solid #262626;
+  border-top: 1px solid #737373;
+  border-radius: 4px;
+  cursor: pointer;
+  height: 20px;
+  margin-bottom: 2px;
+  outline: none;
+  padding: 0;
+  text-align: center;
+  width: 20px;
+}
+
+.comment button:hover {
+  background-image: linear-gradient(to bottom,#666 0,#595959 100%);
+}
+
+.comment button:hover .fa {
+  color: white;
+}
+
+.comment button .fa {
+  color: #ccc;
+  font-size: 14px;
+  transition: color 0.1s ease-out;
+}
+
+.comment .up:active .fa {
+  color: #85BF25;
+}
+
+.comment .down:active .fa {
+  color: #e44;
+}
+
+.comment .body {
+  flex-grow: 1;
+}
+
+.comment .detail {
+  color: #aaa;
+  margin-bottom: 2px;
+}
+
+.comment .caption {
+  color: #ddddd1;
+}
+
+.comment .deleted {
+  color: #778;
+  font-family: monospace;
+}
+
+.comment .children {
+  /* Must match buttons width. */
+  margin-left: 30px;
+}

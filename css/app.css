@@ -1,0 +1,36 @@
+/* Reset */
+* {
+  box-sizing: border-box;
+  position: relative;
+}
+
+body {
+  background-color: #2B2B2B;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+}
+
+::selection {
+  background-color: #85BF25;
+}
+
+a {
+  color: #4E76C9;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.small {
+  font-family: Verdana, Arial, sans-serif;
+  font-size: 10px;
+}
+
+/* Panel component */
+.panel {
+  background-color: #181817;
+  border-radius: 4px;
+  padding: 10px;
+}

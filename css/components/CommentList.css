@@ -1,0 +1,14 @@
+.comment-list .bad {
+  cursor: pointer;
+  /* Must line up with comments */
+  margin-bottom: 10px;
+  margin-left: 10px;
+}
+
+.comment-list .bad:hover .bad-link {
+  text-decoration: underline;
+}
+
+.comment-list .bad-link {
+  font-size: 12px;
+}
