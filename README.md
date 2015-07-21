@@ -13,3 +13,4 @@ TODO
 - Create a new CommentRootList component.
 - Split into multiple files.
 - Cool spinner
+- Opening and closing a node changes the scroll position.
