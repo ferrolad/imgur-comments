@@ -1,0 +1,284 @@
+<!DOCYTPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Comments</title>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+      /* Reset */
+      * {
+        box-sizing: border-box;
+        position: relative;
+      }
+
+      body {
+        background-color: #2B2B2B;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+      }
+
+      ::selection {
+        background-color: #85BF25;
+      }
+
+      a {
+        color: #4E76C9;
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      .small {
+        font-family: Verdana, Arial, sans-serif;
+        font-size: 10px;
+      }
+
+      /* Panel component */
+      .panel {
+        background-color: #181817;
+        border-radius: 4px;
+        padding: 10px;
+      }
+
+      /* Comment component */
+      .comment .row {
+        align-items: flex-start;
+        cursor: pointer;
+        display: flex;
+        margin-bottom: 5px;
+      }
+
+      .comment .row:hover .open {
+        display: block;
+      }
+
+      .comment .open {
+        color: #85BF25;
+        display: none;
+        position: absolute;
+        right: 10px;
+        top: 10px;
+      }
+
+      .comment .toggle {
+        align-items: center;
+        display: flex;
+        flex-shrink: 0;
+        justify-content: center;
+        width: 10px;
+      }
+
+      .comment .vote {
+        display: flex;
+        flex-shrink: 0;
+        /* Simulate equal height when there is one line of text. */
+        margin-top: 4px;
+      }
+
+      .comment .buttons {
+        align-items: center;
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        justify-content: center;
+        width: 30px;
+      }
+
+      .comment button {
+        background-image: linear-gradient(rgb(89,89,89) 0,rgb(64,64,64) 100%);
+        border: 0;
+        border-bottom: 1px solid #262626;
+        border-top: 1px solid #737373;
+        border-radius: 4px;
+        cursor: pointer;
+        height: 20px;
+        margin-bottom: 2px;
+        outline: none;
+        padding: 0;
+        text-align: center;
+        width: 20px;
+      }
+
+      .comment button:hover {
+        background-image: linear-gradient(to bottom,#666 0,#595959 100%);
+      }
+
+      .comment button:hover .fa {
+        color: white;
+      }
+
+      .comment button:active .fa {
+        color: #85BF25;
+      }
+
+      .comment button .fa {
+        color: #ccc;
+        font-size: 14px;
+        transition: color 0.1s ease-out;
+      }
+
+      .comment .body {
+        flex-grow: 1;
+      }
+
+      .comment .detail {
+        color: #aaa;
+        margin-bottom: 2px;
+      }
+
+      .comment .caption {
+        color: #ddddd1;
+      }
+
+      .comment .children {
+        /* Must match buttons width. */
+        margin-left: 30px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="content"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.2/velocity.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bluebird/2.9.33/bluebird.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/immutable/3.7.4/immutable.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/JSXTransformer.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react-with-addons.js"></script>
+    <script type="text/jsx">
+      function sortByBestScoreDescending(caption) {
+        return -parseFloat(caption.get('best_score'));
+      }
+
+      var SlidingPanel = React.createClass({
+        componentWillEnter: function (callback) {
+          var element = React.findDOMNode(this);
+          $.Velocity(element, 'slideDown', this.props.options.toJS()).then(callback);
+        },
+
+        componentWillLeave: function (callback) {
+          var element = React.findDOMNode(this);
+          $.Velocity(element, 'slideUp', this.props.options.toJS()).then(callback);
+        },
+
+        componentWillUnmount: function () {
+          var element = React.findDOMNode(this);
+          $.Velocity(element, 'stop');
+        },
+
+        getDefaultProps: function () {
+          return {
+            options: Immutable.fromJS({
+              duration: 100,
+              easing: 'ease-out'
+            })
+          };
+        },
+
+        render: function () {
+          return <div className={this.props.className}>
+            {this.props.children}
+          </div>;
+        }
+      });
+
+      var Comment = React.createClass({
+        getChildren: function () {
+          return this.props.captions.filter(function (caption) {
+            return caption.get('parent_id') === this.props.caption.get('id');
+          }.bind(this)).sortBy(sortByBestScoreDescending);
+        },
+
+        getInitialState: function () {
+          return {
+            open: false
+          };
+        },
+
+        handleRowClick: function () {
+          this.setState({
+            open: !this.state.open
+          });
+        },
+
+        render: function () {
+          var children = this.getChildren();
+          return <React.addons.TransitionGroup className="comment">
+            <div
+              className="row"
+              onClick={this.handleRowClick}>
+              <div className="vote">
+                <a className="toggle" href="#">
+                  {!children.isEmpty() && (this.state.open ? '-' : '+')}
+                </a>
+                <div className="buttons">
+                  <button type="button">
+                    <i className="fa fa-arrow-up"/>
+                  </button>
+                  <button type="button">
+                    <i className="fa fa-arrow-down"/>
+                  </button>
+                </div>
+              </div>
+              <div className="body panel">
+                <div className="detail small">
+                  <a href="#">{this.props.caption.get('author')}</a> {this.props.caption.get('points')} points : {children.size} replies : {moment(this.props.caption.get('datetime'), 'YYYY-MM-DD HH:mm:ss').fromNow()} <a href="#">reply</a>
+                </div>
+                <div className="caption">
+                  {this.props.caption.get('caption')}
+                </div>
+                <i className="open fa fa-caret-down"/>
+              </div>
+            </div>
+            {this.state.open && <SlidingPanel
+              key="panel"
+              className="children">
+              {children.map(function (caption, i) {
+                return <Comment key={i} caption={caption} captions={this.props.captions}/>;
+              }.bind(this))}
+            </SlidingPanel>}
+          </React.addons.TransitionGroup>;
+        }
+      });
+
+      var CommentList = React.createClass({
+        componentDidMount: function () {
+          Promise.resolve($.ajax({
+            url: './comments.json',
+            dataType: 'json'
+          })).then(function (response) {
+            var captions = Immutable.fromJS(response).getIn(['data', 'captions']);
+            this.setState({
+              captions: captions
+            });
+          }.bind(this));
+        },
+
+        getInitialState() {
+          return {
+            captions: Immutable.List()
+          };
+        },
+
+        getRoots: function () {
+          return this.state.captions.filter(function (caption) {
+            return !caption.get('parent_id');
+          }).sortBy(sortByBestScoreDescending);
+        },
+
+        render: function () {
+          return <div>
+            {this.getRoots().map(function (caption, i) {
+              return <Comment key={i} caption={caption} captions={this.state.captions}/>;
+            }.bind(this))}
+          </div>;
+        }
+      });
+
+
+      React.render(<CommentList/>, $('#content')[0]);
+    </script>
+  </body>
+</html>
