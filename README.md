@@ -1,5 +1,11 @@
 [Demo](https://mking.github.io/comments) / [Original](https://imgur.com/eLpsvsR)
 
+Features
+---
+- Comment tree
+- Separate good and bad replies based on point value
+- Sliding panel for child comments
+
 Run
 ---
 ```
