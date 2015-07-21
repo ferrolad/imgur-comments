@@ -109,14 +109,18 @@
         color: white;
       }
 
-      .comment button:active .fa {
-        color: #85BF25;
-      }
-
       .comment button .fa {
         color: #ccc;
         font-size: 14px;
         transition: color 0.1s ease-out;
+      }
+
+      .comment .up:active .fa {
+        color: #85BF25;
+      }
+
+      .comment .down:active .fa {
+        color: #e44;
       }
 
       .comment .body {
@@ -220,10 +224,10 @@
                   {!children.isEmpty() && (this.state.open ? '-' : '+')}
                 </a>
                 <div className="buttons">
-                  {!this.props.caption.get('deleted') && <button type="button">
+                  {!this.props.caption.get('deleted') && <button type="button" className="up">
                     <i className="fa fa-arrow-up"/>
                   </button>}
-                  {!this.props.caption.get('deleted') && <button type="button">
+                  {!this.props.caption.get('deleted') && <button type="button" className="down">
                     <i className="fa fa-arrow-down"/>
                   </button>}
                 </div>
