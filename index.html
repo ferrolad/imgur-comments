@@ -73,8 +73,8 @@
       .comment .vote {
         display: flex;
         flex-shrink: 0;
-        /* Simulate equal height when there is one line of text. */
-        margin-top: 4px;
+        /* Simulate height for one line of text. */
+        height: 54px;
       }
 
       .comment .buttons {
@@ -132,6 +132,11 @@
         color: #ddddd1;
       }
 
+      .comment .deleted {
+        color: #778;
+        font-family: monospace;
+      }
+
       .comment .children {
         /* Must match buttons width. */
         margin-left: 30px;
@@ -147,6 +152,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/immutable/3.7.4/immutable.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/JSXTransformer.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react-with-addons.js"></script>
+    <script src="https://cdn.rawgit.com/JedWatson/classnames/v2.1.3/index.js"></script>
     <script type="text/jsx">
       function sortByBestScoreDescending(caption) {
         return -parseFloat(caption.get('best_score'));
@@ -214,19 +220,19 @@
                   {!children.isEmpty() && (this.state.open ? '-' : '+')}
                 </a>
                 <div className="buttons">
-                  <button type="button">
+                  {!this.props.caption.get('deleted') && <button type="button">
                     <i className="fa fa-arrow-up"/>
-                  </button>
-                  <button type="button">
+                  </button>}
+                  {!this.props.caption.get('deleted') && <button type="button">
                     <i className="fa fa-arrow-down"/>
-                  </button>
+                  </button>}
                 </div>
               </div>
               <div className="body panel">
                 <div className="detail small">
-                  <a href="#">{this.props.caption.get('author')}</a> {this.props.caption.get('points')} points : {children.size} replies : {moment(this.props.caption.get('datetime'), 'YYYY-MM-DD HH:mm:ss').fromNow()} <a href="#">reply</a>
+                  {this.props.caption.get('author_id') && <a href="#">{this.props.caption.get('author')}</a>} {this.props.caption.get('points')} points : {children.size} replies : {moment(this.props.caption.get('datetime'), 'YYYY-MM-DD HH:mm:ss').toNow()} <a href="#">reply</a>
                 </div>
-                <div className="caption">
+                <div className={classNames('caption', this.props.caption.get('deleted') && 'deleted')}>
                   {this.props.caption.get('caption')}
                 </div>
                 <i className="open fa fa-caret-down"/>
@@ -276,7 +282,6 @@
           </div>;
         }
       });
-
 
       React.render(<CommentList/>, $('#content')[0]);
     </script>
