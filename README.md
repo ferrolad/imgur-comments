@@ -9,8 +9,5 @@ python -mSimpleHTTPServer 8888
 
 TODO
 ---
-- Split out CommentList so we can use it to show/hide bad replies for any level of nesting.
-- Create a new CommentRootList component.
-- Split into multiple files.
-- Cool spinner
+- Cool spinner (especially first page load)
 - Opening and closing a node changes the scroll position.

@@ -145,6 +145,22 @@
         /* Must match buttons width. */
         margin-left: 30px;
       }
+
+      /* CommentList component */
+      .comment-list .bad {
+        cursor: pointer;
+        /* Must line up with comments */
+        margin-bottom: 10px;
+        margin-left: 10px;
+      }
+
+      .comment-list .bad:hover .bad-link {
+        text-decoration: underline;
+      }
+
+      .comment-list .bad-link {
+        font-size: 12px;
+      }
     </style>
   </head>
   <body>
@@ -157,137 +173,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/JSXTransformer.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react-with-addons.js"></script>
     <script src="https://cdn.rawgit.com/JedWatson/classnames/v2.1.3/index.js"></script>
+    <script src="./components/SlidingPanel.js" type="text/jsx"></script>
+    <script src="./getChildren.js" type="text/jsx"></script>
+    <script src="./components/Comment.js" type="text/jsx"></script>
+    <script src="./components/CommentList.js" type="text/jsx"></script>
+    <script src="./components/CommentRootList.js" type="text/jsx"></script>
     <script type="text/jsx">
-      function sortByBestScoreDescending(caption) {
-        return -parseFloat(caption.get('best_score'));
-      }
-
-      var SlidingPanel = React.createClass({
-        componentWillEnter: function (callback) {
-          var element = React.findDOMNode(this);
-          $.Velocity(element, 'slideDown', this.props.options.toJS()).then(callback);
-        },
-
-        componentWillLeave: function (callback) {
-          var element = React.findDOMNode(this);
-          $.Velocity(element, 'slideUp', this.props.options.toJS()).then(callback);
-        },
-
-        componentWillUnmount: function () {
-          var element = React.findDOMNode(this);
-          $.Velocity(element, 'stop');
-        },
-
-        getDefaultProps: function () {
-          return {
-            options: Immutable.fromJS({
-              duration: 100,
-              easing: 'ease-out'
-            })
-          };
-        },
-
-        render: function () {
-          return <div className={this.props.className}>
-            {this.props.children}
-          </div>;
-        }
-      });
-
-      var Comment = React.createClass({
-        getChildren: function () {
-          return this.props.captions.filter(function (caption) {
-            return caption.get('parent_id') === this.props.caption.get('id');
-          }.bind(this)).sortBy(sortByBestScoreDescending);
-        },
-
-        getInitialState: function () {
-          return {
-            open: false
-          };
-        },
-
-        handleRowClick: function () {
-          this.setState({
-            open: !this.state.open
-          });
-        },
-
-        render: function () {
-          var children = this.getChildren();
-          return <React.addons.TransitionGroup className="comment">
-            <div
-              className="row"
-              onClick={this.handleRowClick}>
-              <div className="vote">
-                <a className="toggle" href="#">
-                  {!children.isEmpty() && (this.state.open ? '-' : '+')}
-                </a>
-                <div className="buttons">
-                  {!this.props.caption.get('deleted') && <button type="button" className="up">
-                    <i className="fa fa-arrow-up"/>
-                  </button>}
-                  {!this.props.caption.get('deleted') && <button type="button" className="down">
-                    <i className="fa fa-arrow-down"/>
-                  </button>}
-                </div>
-              </div>
-              <div className="body panel">
-                <div className="detail small">
-                  {this.props.caption.get('author_id') && <a href="#">{this.props.caption.get('author')}</a>} {this.props.caption.get('points')} points : {children.size} replies : {moment(this.props.caption.get('datetime'), 'YYYY-MM-DD HH:mm:ss').toNow()} <a href="#">reply</a>
-                </div>
-                <div className={classNames('caption', this.props.caption.get('deleted') && 'deleted')}>
-                  {this.props.caption.get('caption')}
-                </div>
-                <i className="open fa fa-caret-down"/>
-              </div>
-            </div>
-            {this.state.open && <SlidingPanel
-              key="panel"
-              className="children">
-              {children.map(function (caption, i) {
-                return <Comment key={i} caption={caption} captions={this.props.captions}/>;
-              }.bind(this))}
-            </SlidingPanel>}
-          </React.addons.TransitionGroup>;
-        }
-      });
-
-      var CommentList = React.createClass({
-        componentDidMount: function () {
-          Promise.resolve($.ajax({
-            url: './comments.json',
-            dataType: 'json'
-          })).then(function (response) {
-            var captions = Immutable.fromJS(response).getIn(['data', 'captions']);
-            this.setState({
-              captions: captions
-            });
-          }.bind(this));
-        },
-
-        getInitialState() {
-          return {
-            captions: Immutable.List()
-          };
-        },
-
-        getRoots: function () {
-          return this.state.captions.filter(function (caption) {
-            return !caption.get('parent_id');
-          }).sortBy(sortByBestScoreDescending);
-        },
-
-        render: function () {
-          return <div>
-            {this.getRoots().map(function (caption, i) {
-              return <Comment key={i} caption={caption} captions={this.state.captions}/>;
-            }.bind(this))}
-          </div>;
-        }
-      });
-
-      React.render(<CommentList/>, $('#content')[0]);
+      React.render(<CommentRootList/>, $('#content')[0]);
     </script>
   </body>
 </html>
