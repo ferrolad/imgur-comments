@@ -9,5 +9,6 @@ python -mSimpleHTTPServer 8888
 
 TODO
 ---
-- Bad replies
-- Unfold animation
+- Split out CommentList so we can use it to show/hide bad replies for any level of nesting.
+- Create a new CommentRootList component.
+- Split into multiple files.
